@@ -7,7 +7,7 @@ bigg_cofactors = ['atp[c]', 'atp_c', 'adp_c', 'adp[c]',
                   'udp[c]', 'udp_c', 'ump[c]', 'ump_c',
                   'amp_c', 'amp[c]',
                   'gdp[c]', 'gdp_c', 'gtp[c]', 'gtp_c',
-                  'accoa_c', 'accoa[c]', 'coa_c', 'coa[c]',  # acetyl-CoA
+                  'accoa_c', 'accoa[c]', 'coa_c', 'coa[c]',
                   'q8[c]', 'q8_c', 'q8h2_c', 'q8h2[c]', 'mqn8_c', 'mqn8[c]', 'mql8_c', 'mql8[c]', 'q8h2_c', 'q8h2[c]',
                   'actp[c]', 'actp_c',
                   'h2o_c', 'h2o[c]', 'h2o_e', 'h2o[e]',
@@ -116,21 +116,27 @@ def cofactor_specificity():
             
             # avoid comparison of the same reaction
             if reactions_ids[i] != reactions_ids[j]:
-                # boolean to check if pairwise elements are the same
-                identical_elements = (set(reactant_product_all_reactions[i]) == set(reactant_product_all_reactions[j]))
+
+                # avoid comparison with empty lists
+                if len(reactant_product_all_reactions[i]) > 0 and len(reactant_product_all_reactions[j]) > 0:
                 
-                if identical_elements == True:
-                    # boolean to check if pairwise cofactors are the same
-                    identical_cofactors = (set(cofactor_all_reactions[i]) != set(cofactor_all_reactions[j]))
+                    # boolean to check if pairwise elements are the same
+                    identical_elements = (set(reactant_product_all_reactions[i]) == set(reactant_product_all_reactions[j]))
                     
-                    if identical_cofactors == False:
-                        cofactor_specificity.append((reactions_ids[i], reactions_ids[j]))
+                    if identical_elements == True and reactant_product_all_reactions[i][0] == reactant_product_all_reactions[j][0]:
+                        # boolean to check if pairwise cofactors are the same
+                        identical_cofactors = (set(cofactor_all_reactions[i]) == set(cofactor_all_reactions[j]))
                         
-                        #print(reactions_ids[i], reactions_ids[j])
-                        #print(cofactor_all_reactions[i], cofactor_all_reactions[j])
+                        if identical_cofactors == False:
+                            cofactor_specificity.append((reactions_ids[i], reactions_ids[j]))
+                            
+                            # for debugging only
+                            #print(reactions_ids[i], reactions_ids[j])
+                            #print(reactant_product_all_reactions[i], reactant_product_all_reactions[j])                        
+                            #print(cofactor_all_reactions[i], cofactor_all_reactions[j])
 
     unique_set = {tuple(sorted(pair)) for pair in cofactor_specificity}
-    print("Combinations of reactions:" , list(unique_set))
+    print("Unique combinations of reactions:" , list(unique_set))
 
 
 cofactor_specificity()
