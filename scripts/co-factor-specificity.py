@@ -184,6 +184,14 @@ class Cofactor_Specificity:
         self.sorted_counts = element_counts.most_common()
         
         print(self.sorted_counts)
+        
+        
+    def remove_reactions(self):
+        
+        for knockout_index in self.knockout_indices_all:
+            knockout_reaction = self.reactions_ids[knockout_index]
+            self.model.reactions.get_by_id(knockout_reaction).lower_bound = 0
+            self.model.reactions.get_by_id(knockout_reaction).upper_bound = 0
                 
         
     def filter_reactions(self):
@@ -227,8 +235,7 @@ class Cofactor_Specificity:
             # if 2 or more reactions match the minimum number of cofactors
             if len(keep_indices_group) > 1:
                 # find which reaction has the most abundant cofactor (general abundance from the model) 
-                # and keep her if the most abundant cofactor appears in all reactions, 
-                # then check the next most abundant cofactor
+                # if the most abundant cofactor appears in all reactions, then check the next most abundant cofactor
                 
                 
                 def order_cofactors_by_abundance(sorted_counts_data, specific_reaction_cofactors):
@@ -319,8 +326,10 @@ class Cofactor_Specificity:
                 
                 find_first_winning_sublist(sorted_abundance_all_reactions)                                
                     
+        
+        self.remove_reactions()           
                 
-
+        
 
 cobra_model = load_json_model("../data/e_coli_core.json")
 cofactor_specificity = Cofactor_Specificity(cobra_model)
